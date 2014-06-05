@@ -1,0 +1,133 @@
+### Practical Data Analysis
+#### Assignement
+by Jeff Leek, PhD, Roger D. Peng, PhD, Brian Caffo, PhD
+Coursera June 21014 session 
+  
+```{r setup, include=FALSE, echo=FALSE}
+# set global options
+```
+
+```{r init,echo=FALSE}
+rm(list=ls())
+
+library(knitr)
+library(markdown)
+
+library(lattice)
+library(nlme)
+library(ggplot2)
+library(xtable)
+set.seed(590607)
+
+dt = Sys.time()
+date <- format(dt,"%d-%b-%Y")
+time <- format(dt,"%H:%M:%S")
+rand <- rnorm(1)
+
+#sessionInfo()
+#packageVersion("snow")
+Rversion <- version$version.string
+```
+
+<style>
+body {
+    font-size: 1.0em;
+    font-family: "Arial, Helvetica, sans-serif"";
+}
+</style>
+
+JMM, Document generated on `r date` at `r time`.
+
+#### Introduction
+
+#### Methods
+
+This analysis has been performed using R software package for statistical analysis and the following packages.
+The version of R used was `r Rversion`.
+
+The data for this project come from this source: http://groupware.les.inf.puc-rio.br/har (section on the Weight Lifting Exercise Dataset).
+
+Datasets:
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv
+https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv
+
+
+```{r loadData, echo=FALSE}
+
+# b. load data
+
+# b.1 baseDir will be prefixing all data accesses
+baseDir <- ".."
+
+# b.2 create data sub-directory if necessary
+dataDir <- file.path(baseDir, "data")
+if(!file.exists(dataDir)) { dir.create(dataDir) }
+
+# b.3 download original data if necessary (skip if exists already as it takes time)
+# TODO: function
+fileName <- "train"
+fileExt <- "csv"
+fileUrl <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-training.csv"
+filePath <- file.path(dataDir, paste(fileName, fileExt, sep="."))
+dateFilePath <- file.path(dataDir,paste(fileName,"_date_time_downloaded.txt",sep=""))
+if (!file.exists(filePath)) {
+  download.file (fileUrl, filePath, method="curl")
+  DTDownloaded <- format(Sys.time(), "%Y-%b-%d %H:%M:%S")
+  cat (DTDownloaded, file=dateFilePath)
+} else {
+  DTDownloaded <- scan(file=dateFilePath, what="character", sep="\n")
+}
+cat ("The training dataset is located at", filePath, "and was downloaded on downloaded on", DTDownloaded)
+
+fileName <- "test"
+fileExt <- "csv"
+fileUrl <- "https://d396qusza40orc.cloudfront.net/predmachlearn/pml-testing.csv"
+filePath <- file.path(dataDir, paste(fileName, fileExt, sep="."))
+dateFilePath <- file.path(dataDir,paste(fileName,"_date_time_downloaded.txt",sep=""))
+if (!file.exists(filePath)) {
+  download.file (fileUrl, filePath, method="curl")
+  DTDownloaded <- format(Sys.time(), "%Y-%b-%d %H:%M:%S")
+  cat (DTDownloaded, file=dateFilePath)
+} else {
+  DTDownloaded <- scan(file=dateFilePath, what="character", sep="\n")
+}
+cat ("The test dataset is located at", filePath, "and was downloaded on downloaded on", DTDownloaded)
+
+list.files(dataDir)
+
+# b.4 read dataset and load them in R
+trainSetPath <- file.path (dataDir, "train.csv")
+testSetPath <-  file.path (dataDir, "test.csv")
+trainSet <- read.csv(trainSetPath, header = TRUE) 
+testSet  <- read.csv(testSetPath, header = TRUE)
+dim(trainSet)
+dim(testSet)
+str(trainSet)
+str(testSet)
+summary(trainSet)
+summary(testSet)
+
+#file.show("")
+#head()
+
+```
+
+#### Results
+
+#### Discussion
+
+The test dataset provided was very limited in size (`r nrow(testSet)` rows) compared to the training set (`r nrow(trainSet)` rows), the test sample representing `r nrow(testSet)/((nrow(trainSet)+nrow(testSet)))`% of the total number of samples.
+
+#### Conclusion
+
+#### References
+
+1. R Core Team. R: A language and environment for statistical computing. URL: http://www.R-project.org. R Foundation for Statistical Computing, 2013.
+
+2. Seber, George AF, and Alan J. Lee. Linear regression analysis. Vol. 936. Wiley, 2012.
+
+3. R Markdown Page. URL: http://www.rstudio.com/ide/docs/authoring/using_markdown. 
+
+4. Ugulino, W.; Cardador, D.; Vega, K.; Velloso, E.; Milidiu, R.; Fuks, H. Wearable Computing: Accelerometers' Data Classification of Body Postures and Movements. Proceedings of 21st Brazilian Symposium on Artificial Intelligence. Advances in Artificial Intelligence - SBIA 2012. In: Lecture Notes in Computer Science. , pp. 52-61. Curitiba, PR: Springer Berlin / Heidelberg, 2012. ISBN 978-3-642-34458-9. DOI: 10.1007/978-3-642-34459-6_6.
+
+5. http://groupware.les.inf.puc-rio.br/har#sbia_paper_section#ixzz33n5Wpc66
