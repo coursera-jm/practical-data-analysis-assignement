@@ -23,7 +23,7 @@ The goal of this assignment is to build a model predicting the way exercise will
 This analysis has been performed using R software package for statistical analysis and the following packages.
 The version of R used was R version 3.1.0 (2014-04-10).
 
-Document generated on 22-Jun-2014 at 15:57:23.
+Document generated on 22-Jun-2014 at 16:54:39.
 
 #### Loading Data
 
@@ -47,16 +47,35 @@ Datasets:
 
 The training dataset provided (19622 rows) wil be used to train and test our model, the test dataset provided (20 rows) being used to validate our model.
 
+Let's remove variables not significant and transform to numeric the rest.
+
 
 ```r
+trainSet <- subset(trainSet, select=-c(user_name,X,new_window,num_window))
+testSet <- subset(testSet, select=-c(user_name,X,new_window,num_window))
 #trainSet <- trainSet[complete.cases(trainSet),]
+
 nzv <- nearZeroVar(trainSet)
 trainSet <- trainSet[-nzv]
 testSet <- testSet[-nzv]
+ctrain <- nrow(trainSet)
 for (i in names(trainSet)) {
-  trainSet[,i]  <- as.numeric(trainSet[,i])
-  if (i != "classe")  testSet[,i]  <- as.numeric(testSet[,i])
+  if (i != "classe")  {
+    #cat (i, sum(is.na(trainSet[,i]))/ctrain, "\n")
+    if (sum(is.na(trainSet[,i]))/ctrain > .95) { # remove col where na > 95%
+      trainSet[,i] <- NULL
+      testSet[,i] <- NULL
+    } else {
+      trainSet[,i]  <- as.numeric(trainSet[,i])
+      if (i != "classe")  testSet[,i]  <- as.numeric(testSet[,i])
+    }
+  }
 }
+dim(trainSet)
+```
+
+```
+## [1] 19622    56
 ```
 
 
@@ -70,13 +89,12 @@ training <- trainSet[inTrain, ]
 test <- trainSet[-inTrain, ]
 ```
 
-#### Trining a model
+#### Training a model
 
 Then, train our model.
 
 ```r
-library(randomForest)
-forest_model <- randomForest(classe ~ ., training)
+model <- randomForest(classe ~ ., training, ntree=50)
 ```
 
 ```
@@ -150,14 +168,6 @@ as.character(val)
 
 ```
 ## Error: object 'val' not found
-```
-
-```r
-answers
-```
-
-```
-## Error: object 'answers' not found
 ```
 
 #### Conclusion

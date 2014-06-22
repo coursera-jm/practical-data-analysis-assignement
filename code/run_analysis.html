@@ -202,7 +202,7 @@ body {
 <p>This analysis has been performed using R software package for statistical analysis and the following packages.
 The version of R used was R version 3.1.0 (2014-04-10).</p>
 
-<p>Document generated on 22-Jun-2014 at 15:57:23.</p>
+<p>Document generated on 22-Jun-2014 at 16:54:39.</p>
 
 <h4>Loading Data</h4>
 
@@ -225,14 +225,32 @@ The version of R used was R version 3.1.0 (2014-04-10).</p>
 
 <p>The training dataset provided (19622 rows) wil be used to train and test our model, the test dataset provided (20 rows) being used to validate our model.</p>
 
-<pre><code class="r">#trainSet &lt;- trainSet[complete.cases(trainSet),]
+<p>Let&#39;s remove variables not significant and transform to numeric the rest.</p>
+
+<pre><code class="r">trainSet &lt;- subset(trainSet, select=-c(user_name,X,new_window,num_window))
+testSet &lt;- subset(testSet, select=-c(user_name,X,new_window,num_window))
+#trainSet &lt;- trainSet[complete.cases(trainSet),]
+
 nzv &lt;- nearZeroVar(trainSet)
 trainSet &lt;- trainSet[-nzv]
 testSet &lt;- testSet[-nzv]
+ctrain &lt;- nrow(trainSet)
 for (i in names(trainSet)) {
-  trainSet[,i]  &lt;- as.numeric(trainSet[,i])
-  if (i != &quot;classe&quot;)  testSet[,i]  &lt;- as.numeric(testSet[,i])
+  if (i != &quot;classe&quot;)  {
+    #cat (i, sum(is.na(trainSet[,i]))/ctrain, &quot;\n&quot;)
+    if (sum(is.na(trainSet[,i]))/ctrain &gt; .95) { # remove col where na &gt; 95%
+      trainSet[,i] &lt;- NULL
+      testSet[,i] &lt;- NULL
+    } else {
+      trainSet[,i]  &lt;- as.numeric(trainSet[,i])
+      if (i != &quot;classe&quot;)  testSet[,i]  &lt;- as.numeric(testSet[,i])
+    }
+  }
 }
+dim(trainSet)
+</code></pre>
+
+<pre><code>## [1] 19622    56
 </code></pre>
 
 <h4>Partitioning</h4>
@@ -244,12 +262,11 @@ training &lt;- trainSet[inTrain, ]
 test &lt;- trainSet[-inTrain, ]
 </code></pre>
 
-<h4>Trining a model</h4>
+<h4>Training a model</h4>
 
 <p>Then, train our model.</p>
 
-<pre><code class="r">library(randomForest)
-forest_model &lt;- randomForest(classe ~ ., training)
+<pre><code class="r">model &lt;- randomForest(classe ~ ., training, ntree=50)
 </code></pre>
 
 <pre><code>## Error: Can not handle categorical predictors with more than 32 categories.
@@ -307,12 +324,6 @@ forest_model &lt;- randomForest(classe ~ ., training)
 </code></pre>
 
 <pre><code>## Error: object &#39;val&#39; not found
-</code></pre>
-
-<pre><code class="r">answers
-</code></pre>
-
-<pre><code>## Error: object &#39;answers&#39; not found
 </code></pre>
 
 <h4>Conclusion</h4>
