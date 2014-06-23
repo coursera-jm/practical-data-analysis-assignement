@@ -6,7 +6,7 @@ Coursera June 2014 session
 ```{r setup, include=FALSE, echo=FALSE}
 # set global options
 library(knitr)
-opts_chunk$set(cache=TRUE,echo=TRUE)
+opts_chunk$set(cache=FALSE,echo=TRUE)
 options(width=120)
 ```
 
@@ -16,11 +16,6 @@ rm(list=ls())
 library(randomForest)
 library(markdown)
 library(caret)
-library(pander)
-library(lattice)
-library(nlme)
-library(ggplot2)
-library(xtable)
 set.seed(590607)
 
 dt = Sys.time()
@@ -142,7 +137,7 @@ for (i in names(trainSet)) {
     }
   }
 }
-str(trainSet)
+#str(trainSet)
 ```
 
 
@@ -159,7 +154,7 @@ test <- trainSet[-inTrain, ]
 
 Then, train our model.
 ```{r training}
-model <- randomForest(classe ~ ., training, ntree=50)
+model <- randomForest(classe ~ ., training, ntree=200)
 model
 ```
 
@@ -184,8 +179,8 @@ confusionMatrix(testing_pred, test$classe)
 
 We apply the model to predict the 20 test  sample provided and verify the accuracy of the predications:
 ```{r test}
-val <- predict(model, testSet)
-as.character(val)
+testSet$pred <- predict(model, testSet)
+testSet[,c("problem_id","pred")]
 ```
 
 #### Conclusion
