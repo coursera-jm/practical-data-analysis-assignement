@@ -183,6 +183,15 @@ testSet$pred <- predict(model, testSet)
 testSet[,c("problem_id","pred")]
 ```
 
+### Writing results
+```{r write}
+n = length(testSet$pred)
+for (i in 1:n) {
+    filename = paste0("id_", i, ".txt")
+    write.table(testSet[i,], file = filename, quote = FALSE, row.names = FALSE, 
+        col.names = FALSE)
+}
+```
 #### Conclusion
 
 All tests were predicted correctly on the validation sample (provided).
