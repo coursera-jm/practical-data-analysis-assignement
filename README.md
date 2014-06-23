@@ -3,6 +3,8 @@ Practical Data Analysis Assignement
 Coursera June 2014 session 
 by Jeff Leek, PhD, Roger D. Peng, PhD, Brian Caffo, PhD
 
+HTML generated available at http://coursera-jm.github.io/practical-data-analysis-assignement/
+
 Directories organization:
 
   - code:
